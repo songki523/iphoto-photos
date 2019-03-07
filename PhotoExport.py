@@ -1,7 +1,22 @@
 import os, time
+import datetime
 import argparse
 import csv
 import shutil
+import json
+
+##########################
+#   Initial Variables    #
+##########################
+init = {
+    "debugging"             : True,
+    "debugging_log"         : {},
+    "error_log"             : "/Volumes/Pictures/iphoto-photo-importer/errors.log",
+    "debugger_path"         : "/Volumes/Pictures/iPhoto-photo-importer/debuggerLog.json",
+    "library_collection"    : "/Volumes/Pictures/iPhoto/2008 - 2015/iPhoto External.photolibrary/Masters",
+    "destination"           : "/Volumes/Pictures/NewPhoto",
+    "image_file_path"       : "/Volumes/Pictures/iphoto-photo-importer/imageFilePath.csv"
+}
 
 """Starts Command Line Interface
 
@@ -9,17 +24,24 @@ Returns:
     Void -- Starts CLI
 """
 def start_CLI():
-    # parser = argparse.ArgumentParser(description='Process some directory names.')
-    # parser.add_argument('directory', metavar='Directory Path', nargs='+',
-    #                    help='Directory Path to the Images')
+    parser = argparse.ArgumentParser(description='Process some directory names.')
+    parser.add_argument('directory', metavar='Directory Path', nargs='+',
+                       help='Directory Path to the Images')
 
-    # args = parser.parse_args()
+    args = parser.parse_args()
     # _directory = args.directory[0]
-    pass
+    print('arg parse invoked')
 
-_directory = '/Volumes/Pictures/iPhoto'
-_destination = '/Volumes/Pictures/NewPhoto'
-#_csvFile = open('imageFilePath.csv', 'w+')
+def handleDebug(init):
+    if init["debugging"]:
+        #print(init["debugging_log"])
+        with open(init["debugger_path"], "w") as write_json:
+            json.dump(init["debugging_log"], write_json)
+
+def printDebug(statement):
+    global init
+    if init["debugging"]:
+        print(str(datetime.datetime.now()) + " : " + statement)
 
 def isNotDSstore(directoryName):
     return directoryName != ".DS_Store"
@@ -57,10 +79,11 @@ def isNotDSstore(directoryName):
 """Generates File Paths using date convention
 
 Returns:
-    String -- File Path
+    String -- File Path, Destination
 """
 def createFilePath(tupleDate, origin_file_path):
-    __destination = _destination
+    global init
+    __destination = init["destination"]
     __file_name = os.path.basename(origin_file_path)
     __directory_path = None
 
@@ -72,7 +95,7 @@ def createFilePath(tupleDate, origin_file_path):
 
     return __directory_path, __destination
 
-"""Gets Created Date then converted into Tuple
+"""Gets Created Date then converted into Tuple (only tested on Mac OS)
 
 Returns:
     Tuple -- (Year, Month, Day)
@@ -91,9 +114,10 @@ def getDate(filePath):
     return timeTuple[:2]
 
 def storeIntoCSV(collections):
-    file_exists = os.path.isfile('imageFilePath.csv')
+    global init
+    file_exists = os.path.isfile(init["image_file_path"])
 
-    with open('imageFilePath.csv', 'a') as _csvFile:
+    with open(init["image_file_path"], 'a') as _csvFile:
         _fieldnames = ['file_path','created_in','destination','destination_path']
         writer = csv.DictWriter(_csvFile, fieldnames=_fieldnames)
 
@@ -101,9 +125,26 @@ def storeIntoCSV(collections):
             writer.writeheader()
         writer.writerows(collections)
 
+    init["debugging_log"]["storeIntoCSV"] = "CSV Stored"
+
+def purgeCSV(file):
+    global init
+
+    try:
+        os.remove(file)
+    except:
+        pass
+
+    with open(file, "w") as empty_csv:
+            pass
+
+    init["debugging_log"]["removeCSV"] = file
+
 """Recursive dryRun Function to reach end of the file path
 """
-def dryRun(directory, iteration = 0):
+def drillDownFolders(directory):
+    global init
+
     _folders = []
     _files = []
     _tupleDate = None
@@ -112,33 +153,38 @@ def dryRun(directory, iteration = 0):
     for entry in os.scandir(directory):
         if entry.is_dir():
             _folders.append(entry.path)
+            printDebug("[drillDownFolders] Drilling Folders -- " + entry.path)
         elif entry.is_file():
             _tupleDate = getDate(entry.path)
             _fileStat = createFilePath(_tupleDate, entry.path)
             _files.append({'file_path' : entry.path, 'created_in' : _tupleDate, 'destination' : _fileStat[1] , 'destination_path' : _fileStat[0]})
     
     storeIntoCSV(_files)
-    #print("Folders Iterations: {0} \n".format(iteration), "\n".join(_folders))
-    #print("Files Iterations: {0} \n".format(iteration), "\n".join(_files))
     
-    if _folders and iteration <= 4:
+    if _folders:
         for subDirectory in _folders:
-            dryRun(subDirectory, iteration + 1)
+            drillDownFolders(subDirectory)
 
 """Read a CSV File then copy over image files
 """
-def processCSVFiles():
+def runCopyImage():
+    global init
+    _output = {}
     with open('imageFilePath.csv') as _csvFile:
         reader = csv.DictReader(_csvFile)
         for row in reader:
-            print(row['file_path'], row['destination'])
+            _output["file_path"] = row['file_path']
+            _output["destination"] = row['destination']
             copyImageFiles(row['file_path'], row['destination'], row['destination_path'])
+    init["debugging_log"]["processCSVFiles"] = _output
 
 def logErrors(error_message):
     with open('errors.log', 'a') as _logfile:
         _logfile.write(str(error_message) + "\n")
 
 def copyImageFiles(file_path, destination ,destination_path):
+    global init
+    _output = {}
     #create destination directory
     try:
         os.makedirs(destination_path)
@@ -147,17 +193,25 @@ def copyImageFiles(file_path, destination ,destination_path):
     #copy files
     try:
         shutil.copy(file_path, destination)
-        print("Completed: " , file_path)
+        _output["Completed"] = file_path
     except IOError as e:
         logErrors(e)
-        print("Failed: ", file_path ,e)
+        _output["Failed"] = file_path + ":" + e
 
+    init["debugging_log"]["copyImageFiles"] = _output
 
-# try:
-#     os.remove("imageFilePath.csv")
-# except:
-#     pass
+def createTransferCatelog():
+    global init
+    purgeCSV(init["image_file_path"])
+    drillDownFolders(init["library_collection"])
 
-# dryRun2('/Volumes/Pictures/iPhoto/2008 - 2015/iPhoto External.photolibrary/Masters')
+# Create Argument for Creating Catelog
+#createTransferCatelog()
 
-processCSVFiles()
+# Create Argument for Copy Image
+#runCopyImage()
+
+# Create Argument for Debug parameter
+#handleDebug(init)
+
+start_CLI()
