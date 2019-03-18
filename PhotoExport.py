@@ -18,12 +18,13 @@ init = {
     "image_file_path"       : "/Volumes/Pictures/iphoto-photo-importer/imageFilePath.csv"
 }
 
-"""Starts Command Line Interface
 
-Returns:
-    Void -- Starts CLI
-"""
 def start_CLI():
+    """Starts Command Line Interface
+
+    Returns:
+        Void -- Starts CLI
+    """
     parser = argparse.ArgumentParser(description='Process some directory names.')
     parser.add_argument('directory', metavar='Directory Path', nargs='+',
                        help='Directory Path to the Images')
@@ -76,12 +77,13 @@ def isNotDSstore(directoryName):
 #                 _photoCollections.append(_traverseDirectory)
 #     print("Collections: \t", _photoCollections)
 
-"""Generates File Paths using date convention
 
-Returns:
-    String -- File Path, Destination
-"""
 def createFilePath(tupleDate, origin_file_path):
+    """Generates File Paths using date convention
+
+    Returns:
+        String -- File Path, Destination
+    """
     global init
     __destination = init["destination"]
     __file_name = os.path.basename(origin_file_path)
@@ -95,12 +97,13 @@ def createFilePath(tupleDate, origin_file_path):
 
     return __directory_path, __destination
 
-"""Gets Created Date then converted into Tuple (only tested on Mac OS)
 
-Returns:
-    Tuple -- (Year, Month, Day)
-"""
 def getDate(filePath):
+    """Gets Created Date then converted into Tuple (only tested on Mac OS)
+
+    Returns:
+        Tuple -- (Year, Month, Day)
+    """
     stat = os.stat(filePath)
     timeTuple = None
     try:
@@ -140,9 +143,9 @@ def purgeCSV(file):
 
     init["debugging_log"]["removeCSV"] = file
 
-"""Recursive dryRun Function to reach end of the file path
-"""
 def drillDownFolders(directory):
+    """Recursive dryRun Function to reach end of the file path
+    """
     global init
 
     _folders = []
@@ -165,9 +168,9 @@ def drillDownFolders(directory):
         for subDirectory in _folders:
             drillDownFolders(subDirectory)
 
-"""Read a CSV File then copy over image files
-"""
 def runCopyImage():
+    """Read a CSV File then copy over image files
+    """
     global init
     _output = {}
     with open('imageFilePath.csv') as _csvFile:
