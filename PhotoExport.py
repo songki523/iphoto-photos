@@ -1,9 +1,11 @@
+from tqdm import tqdm
 import os, time
 import datetime
 import argparse
 import csv
 import shutil
 import json
+
 
 ##########################
 #   Initial Variables    #
@@ -173,13 +175,15 @@ def runCopyImage():
     """
     global init
     _output = {}
-    with open('imageFilePath.csv') as _csvFile:
+    #with open('imageFilePath.csv') as _csvFile:
+    with open('test0522.csv') as _csvFile:
         reader = csv.DictReader(_csvFile)
-        for row in reader:
+        for row in tqdm(reader, desc="Copying image in Progress..."):
             _output["file_path"] = row['file_path']
             _output["destination"] = row['destination']
             copyImageFiles(row['file_path'], row['destination'], row['destination_path'])
     init["debugging_log"]["processCSVFiles"] = _output
+    print('Run Copy Image: ',_output)
 
 def logErrors(error_message):
     with open('errors.log', 'a') as _logfile:
@@ -208,13 +212,13 @@ def createTransferCatelog():
     purgeCSV(init["image_file_path"])
     drillDownFolders(init["library_collection"])
 
-# Create Argument for Creating Catelog
+## Create Argument for Creating Catelog
 #createTransferCatelog()
 
 # Create Argument for Copy Image
-#runCopyImage()
+runCopyImage()
 
-# Create Argument for Debug parameter
+## Create Argument for Debug parameter
 #handleDebug(init)
 
-start_CLI()
+#start_CLI()

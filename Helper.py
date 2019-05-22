@@ -3,14 +3,17 @@ import time
 from SpreadSheet import SpreadSheet
 
 class Helper:
-    def __init__(self, destination, new_path):
-        self.destination = destination
-        self.new_path = new_path
+    def __init__(self, source_directory, csv_path, **kwarg):
+        self.source_directory = source_directory
+        self.destination_directory = source_directory
+        self.csv_path = csv_path
+        if kwarg['destination_directory']:
+            self.destination_directory = kwarg['destination_directory']
 
     def createFilePath(self, tupleDate, origin_file_path):
         #Generates File Paths using date convention
 
-        __destination = self.destination
+        __destination = self.destination_directory
         __file_name = os.path.basename(origin_file_path)
         __directory_path = None
 
@@ -49,14 +52,30 @@ class Helper:
                 _folders.append(entry.path)
                 print("[drillDownFolders] Drilling Folders -- " + entry.path)
             elif entry.is_file():
-                _tupleDate = self.getBirthDate(entry.path)
-                _fileStat = self.createFilePath(_tupleDate, entry.path)
-                _files.append({'file_path' : entry.path, 'created_in' : _tupleDate, 'destination' : _fileStat[1] , 'destination_path' : _fileStat[0]})
+                if self.fileIsImage(entry.name):
+                    _tupleDate = self.getBirthDate(entry.path)
+                    _fileStat = self.createFilePath(_tupleDate, entry.path)
+                    _files.append({'file_path' : entry.path, 'created_in' : _tupleDate, 'destination' : _fileStat[1] , 'destination_path' : _fileStat[0]})
         
-        spread_sheet = SpreadSheet(self.new_path)
+        spread_sheet = SpreadSheet(self.csv_path)
         spread_sheet.storeIntoCSV(_files)
         
         if _folders:
             for subDirectory in _folders:
                 self.drillDownFolders(subDirectory)
-    
+
+    def fileIsImage(self, entry_name):
+        #Validate if file is image
+        _return_boolean = True
+        # File Extension eg. .NEF .JPG
+        _file_extension = entry_name[-3:]
+        # Hidden Files eg. ._hidden.JPG
+        _file_prefix = entry_name[:2]
+
+        #Checks if file has image extension and not have hidden file prefix
+        if _file_extension not in ['NEF','JPG','JPEG'] or _file_prefix == '._':
+            _return_boolean = False        
+        else:
+            print('[FileIsImage] File ', entry_name, 'is an Image')            
+        
+        return _return_boolean
