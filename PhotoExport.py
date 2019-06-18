@@ -170,13 +170,13 @@ def drillDownFolders(directory):
         for subDirectory in _folders:
             drillDownFolders(subDirectory)
 
-def runCopyImage():
+def runCopyImage(csv_file_path):
     """Read a CSV File then copy over image files
     """
     global init
     _output = {}
     #with open('imageFilePath.csv') as _csvFile:
-    with open('test0522.csv') as _csvFile:
+    with open(csv_file_path) as _csvFile:
         reader = csv.DictReader(_csvFile)
         for row in tqdm(reader, desc="Copying image in Progress..."):
             _output["file_path"] = row['file_path']
@@ -214,9 +214,6 @@ def createTransferCatelog():
 
 ## Create Argument for Creating Catelog
 #createTransferCatelog()
-
-# Create Argument for Copy Image
-runCopyImage()
 
 ## Create Argument for Debug parameter
 #handleDebug(init)

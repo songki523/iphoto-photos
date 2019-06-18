@@ -1,12 +1,13 @@
 import os
 import time
+import datetime
 from SpreadSheet import SpreadSheet
 
 class Helper:
-    def __init__(self, source_directory, csv_path, **kwarg):
+    def __init__(self, source_directory, **kwarg):
         self.source_directory = source_directory
+        self.CSV_file = self.create_CSV_File()
         self.destination_directory = source_directory
-        self.csv_path = csv_path
         if kwarg['destination_directory']:
             self.destination_directory = kwarg['destination_directory']
 
@@ -24,6 +25,16 @@ class Helper:
         __destination += "/" + __file_name
 
         return __directory_path, __destination
+
+
+    def create_CSV_File(self):
+        # Creates CSV Files
+        __parent_directory = './spreadsheet/'
+        __date_str = datetime.datetime.now().strftime("Image-Collections-%Y-%m-%d")
+        __file_extension = '.csv'
+
+        return __parent_directory + __date_str + __file_extension
+
 
     def getBirthDate(self, filePath):
         #Gets Created Date then converted into Tuple (only tested on Mac OS)
@@ -57,7 +68,7 @@ class Helper:
                     _fileStat = self.createFilePath(_tupleDate, entry.path)
                     _files.append({'file_path' : entry.path, 'created_in' : _tupleDate, 'destination' : _fileStat[1] , 'destination_path' : _fileStat[0]})
         
-        spread_sheet = SpreadSheet(self.csv_path)
+        spread_sheet = SpreadSheet(self.CSV_file)
         spread_sheet.storeIntoCSV(_files)
         
         if _folders:
