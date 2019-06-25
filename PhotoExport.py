@@ -170,12 +170,16 @@ def drillDownFolders(directory):
         for subDirectory in _folders:
             drillDownFolders(subDirectory)
 
-def runCopyImage(csv_file_path):
+def runCopyImage():
     """Read a CSV File then copy over image files
     """
+
+    # Todo: Change CSV file dynamically
+
     global init
     _output = {}
     #with open('imageFilePath.csv') as _csvFile:
+    csv_file_path = '/volumes/pictures/iphoto-photo-importer/spreadsheet/Image-Collections-2019-06-25.csv'
     with open(csv_file_path) as _csvFile:
         reader = csv.DictReader(_csvFile)
         for row in tqdm(reader, desc="Copying image in Progress..."):

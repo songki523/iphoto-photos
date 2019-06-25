@@ -14,4 +14,4 @@
 1. Instianciate helper class (image path, csv file name, destination if path is different) `helper = Helper('/Volumes/NIKON D3300', './test0522.csv', destination_directory = '/Volumes/Pictures/Photos')`
 2. Create a csv file `helper.drillDownFolders(helper.source_directory)`
 3. Validate csv file
-4. Copy over image files `python PhotoExport.py` `runCopyImage`
+4. Copy over image files `python -c 'import PhotoExport; PhotoExport.runCopyImage()'`
