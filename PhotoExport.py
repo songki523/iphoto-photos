@@ -179,10 +179,12 @@ def runCopyImage():
     global init
     _output = {}
     #with open('imageFilePath.csv') as _csvFile:
-    csv_file_path = '/volumes/pictures/iphoto-photo-importer/spreadsheet/Image-Collections-2019-06-25.csv'
+    csv_file_path = '/volumes/pictures/iphoto-photo-importer/spreadsheet/Image-Collections-2019-07-03.csv'
     with open(csv_file_path) as _csvFile:
         reader = csv.DictReader(_csvFile)
-        for row in tqdm(reader, desc="Copying image in Progress..."):
+        _reader_rows = list(reader)
+        _total_reader_rows = len(_reader_rows)
+        for row in tqdm(_reader_rows, total=_total_reader_rows ,desc="Copying image in Progress..."):
             _output["file_path"] = row['file_path']
             _output["destination"] = row['destination']
             copyImageFiles(row['file_path'], row['destination'], row['destination_path'])
@@ -223,3 +225,8 @@ def createTransferCatelog():
 #handleDebug(init)
 
 #start_CLI()
+
+###
+# Comment out this method for debug
+###
+runCopyImage()

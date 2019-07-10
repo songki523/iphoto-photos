@@ -15,4 +15,9 @@
 2. Create a csv file `helper.drillDownFolders(helper.source_directory)`
 3. Validate csv file
 4. Copy over image files `python -c 'import PhotoExport; PhotoExport.runCopyImage()'`
+## Operations
+1. Run `python main.py`
+2. Check spreadsheet file
+3. Update spreadsheet variable in runCopyImage()
+4. Run `python photoexport.py`
 ### version-1.0 is current branch
