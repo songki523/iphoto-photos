@@ -1,5 +1,5 @@
 # Photo Export Application
-## Interactive Commandline Application design to extract exisitng photos from iPhoto packages into folder based structures to standerized platform agnostics. 
+## Interactive Commandline Application design to extract exisitng photos from various sources into folder based structures to standerized platform agnostics. 
 ## version-1.0 is current branch
 ### NOTE: only been tested in mac environment. 
 ## Todo
