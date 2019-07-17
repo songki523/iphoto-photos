@@ -54,7 +54,8 @@ if do_copy_image == 'yes':
 
 elif do_copy_image == 'no':
     #stop
-    print('Stop printing process')
-
+    print('Please select the spreadsheet ... ')
+    file_source_path = filedialog.askdirectory()
+    print(file_source_path)
 else:
-    print('Invalid Response')
+    print('Stop printing process')

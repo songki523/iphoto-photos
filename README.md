@@ -1,6 +1,6 @@
 # Photo Export Application
 ## Interactive Commandline Application design to extract exisitng photos from various sources into folder based structures to standerized platform agnostics. 
-## version-1.0 is current branch
+## version-1.0 is stable branch; version-1.1 is the latest branch
 ### NOTE: only been tested in mac environment. 
 ## Todo
 - Let user select spreadsheet file if the user prefers different spreadsheet
