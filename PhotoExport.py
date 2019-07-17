@@ -170,16 +170,13 @@ def drillDownFolders(directory):
         for subDirectory in _folders:
             drillDownFolders(subDirectory)
 
-def runCopyImage():
+def runCopyImage(arg_csv_file_path):
     """Read a CSV File then copy over image files
     """
-
-    # Todo: Change CSV file dynamically
-
     global init
     _output = {}
-    #with open('imageFilePath.csv') as _csvFile:
-    csv_file_path = '/volumes/pictures/iphoto-photo-importer/spreadsheet/Image-Collections-2019-07-03.csv'
+    csv_file_path = arg_csv_file_path
+
     with open(csv_file_path) as _csvFile:
         reader = csv.DictReader(_csvFile)
         _reader_rows = list(reader)
@@ -217,16 +214,3 @@ def createTransferCatelog():
     global init
     purgeCSV(init["image_file_path"])
     drillDownFolders(init["library_collection"])
-
-## Create Argument for Creating Catelog
-#createTransferCatelog()
-
-## Create Argument for Debug parameter
-#handleDebug(init)
-
-#start_CLI()
-
-###
-# Comment out this method for debug
-###
-runCopyImage()
