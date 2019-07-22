@@ -4,7 +4,7 @@ import datetime
 from SpreadSheet import SpreadSheet
 
 class Helper:
-    def __init__(self, source_directory, **kwarg):
+    def __init__(self, source_directory = '', **kwarg):
         self.source_directory = source_directory
         self.CSV_file = self.create_CSV_File()
         self.destination_directory = source_directory

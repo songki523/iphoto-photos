@@ -13,6 +13,7 @@
 - Add Progress Bar
 - Add File Selector Gui
 - Copies images when the user confirms
+- Check if file exists
 ## Operations
 1. Run `python main.py`
 2. Follow Command Prompt

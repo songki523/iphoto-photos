@@ -10,16 +10,22 @@ import json
 ##########################
 #   Initial Variables    #
 ##########################
+debugging_log = {
+    "copyImageFiles": {
+        "AlreadyExistPath" : [],
+        "AlreadyExistFile" : []
+    }
+}
+
 init = {
     "debugging"             : True,
-    "debugging_log"         : {},
-    "error_log"             : "/Volumes/Pictures/iphoto-photo-importer/errors.log",
-    "debugger_path"         : "/Volumes/Pictures/iPhoto-photo-importer/debuggerLog.json",
+    "debugging_log"         : debugging_log,
+    "error_log"             : "/Volumes/Pictures/iphoto-photo-importer/logs/errors.log",
+    "debugger_path"         : "/Volumes/Pictures/iPhoto-photo-importer/logs/debuggerLog.json",
     "library_collection"    : "/Volumes/Pictures/iPhoto/2008 - 2015/iPhoto External.photolibrary/Masters",
     "destination"           : "/Volumes/Pictures/NewPhoto",
     "image_file_path"       : "/Volumes/Pictures/iphoto-photo-importer/imageFilePath.csv"
 }
-
 
 def start_CLI():
     """Starts Command Line Interface
@@ -41,6 +47,10 @@ def handleDebug(init):
         with open(init["debugger_path"], "w") as write_json:
             json.dump(init["debugging_log"], write_json)
 
+def logErrors(error_message):
+    with open('./logs/errors.log', 'a') as _logfile:
+        _logfile.write(str(error_message) + "\n")
+
 def printDebug(statement):
     global init
     if init["debugging"]:
@@ -48,6 +58,7 @@ def printDebug(statement):
 
 def isNotDSstore(directoryName):
     return directoryName != ".DS_Store"
+
 
 #
 # Enable when iphoto and photo collections are completed. 
@@ -186,29 +197,31 @@ def runCopyImage(arg_csv_file_path):
             _output["destination"] = row['destination']
             copyImageFiles(row['file_path'], row['destination'], row['destination_path'])
     init["debugging_log"]["processCSVFiles"] = _output
-    print('Run Copy Image: ',_output)
-
-def logErrors(error_message):
-    with open('errors.log', 'a') as _logfile:
-        _logfile.write(str(error_message) + "\n")
+    handleDebug(init)
 
 def copyImageFiles(file_path, destination ,destination_path):
     global init
     _output = {}
     #create destination directory
     try:
-        os.makedirs(destination_path)
+        if not os.path.exists(destination_path):
+            os.makedirs(destination_path)
+        else:
+            # Logs already exist
+            init["debugging_log"]["copyImageFiles"]["AlreadyExistPath"].append(destination_path)
     except OSError as e:
         logErrors(e)    
     #copy files
     try:
-        shutil.copy(file_path, destination)
-        _output["Completed"] = file_path
+        if not os.path.isfile(destination):
+            shutil.copy(file_path, destination)
+            _output["Completed"] = file_path
+        else:
+            # Logs already exist
+            init["debugging_log"]["copyImageFiles"]["AlreadyExistFile"].append(destination)
     except IOError as e:
         logErrors(e)
         _output["Failed"] = file_path + ":" + e
-
-    init["debugging_log"]["copyImageFiles"] = _output
 
 def createTransferCatelog():
     global init

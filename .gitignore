@@ -10,3 +10,4 @@
 *.csv
 *.log
 .DS_Store
+/logs

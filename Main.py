@@ -15,30 +15,35 @@ from PhotoExport import runCopyImage
 # helper = Helper(photos.image_path, photos.csv_path)
 # helper.drillDownFolders(helper.destination)
 
+# Constant
+str_destination = '/Volumes/Pictures/Photos'
+
+# Objects
+helper = Helper(destination_directory = '/Volumes/Pictures/Photos')
 # tkinter UI
 root = tkinter.Tk()
 root.withdraw()
 
-print('Please select the source ... ')
 
-file_source_path = filedialog.askdirectory()
 
-str_destination = '/Volumes/Pictures/Photos'
-
-## Ask User to Collect image file path to csv file
+# Ask User to Collect image file path to csv file
 bool_destination = input('Sending images to ' + str_destination + ' Should I proceed? [yes,no]: \t')
 
 if bool_destination == 'yes':
-    print(file_source_path, str_destination)
+    # Asking User to select the source
+    print('Please select the source ... ')
+    file_source_path = filedialog.askdirectory()
 
-    helper = Helper(file_source_path, destination_directory = '/Volumes/Pictures/Photos')
+    # Digging in the folders
+    print(file_source_path, str_destination)
+    helper.source_directory = file_source_path    
     helper.drillDownFolders(helper.source_directory)
 
     print('image paths saved into csv file.')
     os.system('open ./spreadsheet')
 
 elif bool_destination == 'no':
-    print('Skipping CSV transffer process ...')
+    print('Skipping CSV transfer process ...')
 
 else:
     print('Invalid Response')
