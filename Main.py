@@ -1,3 +1,4 @@
+import sys
 import tkinter
 import os
 from tkinter import filedialog
@@ -17,14 +18,22 @@ from PhotoExport import runCopyImage
 
 # Constant
 str_destination = '/Volumes/Pictures/Photos'
+nikon_destination = '/Volumes/Pictures/Photos/Nikon D700'
+
+# Select either Nikon or Fuji
+device_choice = input('Which Camera? [nikon, fuji]:  ')
+if device_choice == 'fuji':
+    pass
+if device_choice == 'nikon':
+    str_destination = nikon_destination
+if device_choice not in ['fuji','nikon']:
+    sys.exit('no device selected')
 
 # Objects
-helper = Helper(destination_directory = '/Volumes/Pictures/Photos')
+helper = Helper(destination_directory = str_destination)
 # tkinter UI
 root = tkinter.Tk()
 root.withdraw()
-
-
 
 # Ask User to Collect image file path to csv file
 bool_destination = input('Sending images to ' + str_destination + ' Should I proceed? [yes,no]: \t')
@@ -46,7 +55,7 @@ elif bool_destination == 'no':
     print('Skipping CSV transfer process ...')
 
 else:
-    print('Invalid Response')
+    sys.exit('Invalid Response')
 
 ## Ask User to Transfer the image
 prompt = 'Copying images referencing from ' + helper.CSV_file + '... \n Proceed with transeferring process? [yes,no]: '
