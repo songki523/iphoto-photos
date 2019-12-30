@@ -17,6 +17,7 @@ from PhotoExport import runCopyImage
 # helper.drillDownFolders(helper.destination)
 
 # Constant
+app_destination = '/Volumes/Pictures/iphoto-photo-importer'
 str_destination = '/Volumes/Pictures/Photos'
 nikon_destination = '/Volumes/Pictures/Photos/Nikon D700'
 
@@ -30,7 +31,7 @@ if device_choice not in ['fuji','nikon']:
     sys.exit('no device selected')
 
 # Objects
-helper = Helper(destination_directory = str_destination)
+helper = Helper(destination_directory=str_destination, app_directory=app_destination)
 # tkinter UI
 root = tkinter.Tk()
 root.withdraw()
@@ -46,10 +47,10 @@ if bool_destination == 'yes':
     # Digging in the folders
     print(file_source_path, str_destination)
     helper.source_directory = file_source_path    
-    helper.drillDownFolders(helper.source_directory)
+    helper.drill_down_folders(helper.source_directory)
 
     print('image paths saved into csv file.')
-    os.system('open ./spreadsheet')
+    os.system('open {}/spreadsheet'.format(app_destination))
 
 elif bool_destination == 'no':
     print('Skipping CSV transfer process ...')
@@ -57,17 +58,17 @@ elif bool_destination == 'no':
 else:
     sys.exit('Invalid Response')
 
-## Ask User to Transfer the image
+# Ask User to Transfer the image
 prompt = 'Copying images referencing from ' + helper.CSV_file + '... \n Proceed with transeferring process? [yes,no]: '
 do_copy_image = input(prompt)
 
 if do_copy_image == 'yes':
-    #start print process
+    # start print process
     print('Initiate printing protocol')
     runCopyImage(helper.CSV_file)
 
 elif do_copy_image == 'no':
-    #stop
+    # stop
     print('Please select the spreadsheet ... ')
     file_source_path = filedialog.askdirectory()
     print(file_source_path)

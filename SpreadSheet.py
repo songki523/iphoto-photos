@@ -1,5 +1,7 @@
 import sys
-import os,csv
+import os
+import csv
+
 
 class SpreadSheet:
     """Spread Sheet Class created for the task
@@ -13,7 +15,7 @@ class SpreadSheet:
     def __init__(self, file_path):
         self.file_path = file_path
 
-    def storeIntoCSV(self, collections):
+    def store_into_csv(self, collections):
         """Append rows into CSV Files
         
         Parameters
@@ -35,7 +37,7 @@ class SpreadSheet:
         # Debugging
         print('Storing CSV files Completed in : ', self.file_path)
 
-    def purgeCSV(self):
+    def purge_csv(self):
         """[void] Empty ouf the CSV file"""
 
         try:
@@ -44,7 +46,7 @@ class SpreadSheet:
             pass
 
         with open(self.file_path, "w") as empty_csv:
-                pass
+            pass
 
-        ## Debugging
+        # Debugging
         print('Purging CSV Files: ', self.file_path)
